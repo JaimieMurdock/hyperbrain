@@ -1,5 +1,7 @@
 import json
-with open('../human-brain-atlas.json') as jsonfile:
+import os.path
+this_place = os.path.dirname(os.path.abspath(__file__))
+with open(os.path.join(this_place, '../human-brain-atlas.json')) as jsonfile:
     atlas = json.load(jsonfile)['msg']
 
 name_id = dict()
