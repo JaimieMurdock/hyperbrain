@@ -3,11 +3,17 @@ with open('human-brain-atlas.json') as jsonfile:
     atlas = json.load(jsonfile)['msg']
 
 name_id = dict()
+name_abbr = dict()
+abbr_id = dict()
+abbr_name = dict()
 def add_ids(atlas):
     global name_id
     for item in atlas:
         if ',' not in item['name']:
             name_id[item['name']] = item['id']
+            name_abbr[item['name']] = item['acronym']
+            abbr_id[item['acronym']] = item['id']
+            abbr_name[item['acronym']] = item['name']
         if item.get('children'):
             add_ids(item['children'])
 
@@ -25,9 +31,6 @@ def _brain_token_generator(document):
     rest = document.lower()
     rest = rehyph(rest)
     rest = strip_punc_word(rest)
-    query = Session.query(Searchpattern)
-
-    MIN_LEN = 6 
 
     while rest:
         if u' ' not in rest:
@@ -40,29 +43,23 @@ def _brain_token_generator(document):
         # always yield the raw string
         yield first
 
-        # check if we can simply skip the short patterns
-        if len(first) < MIN_LEN and first not in short_patterns:
-            continue
-
-
-       
         # search the database for keywords
-        patterns = query.filter(Searchpattern.searchpattern.like(first + u' %')).all()
-        
-        exact_match = query.filter(Searchpattern.searchpattern==first).first()
-        if exact_match is not None:
-            patterns.append(exact_match)
+        if name_id.get(first):
+            patterns.append(first)
+
+        patterns = [name for name in name_id.keys() 
+                        if name.startswith(first + u' ')]
 
         for p in patterns:
             # check if multi-phrase starts match in the rest of the phrase.
-            if u' ' in p.searchpattern:
-                first_pattern_word, longpattern = p.searchpattern.split(u' ',  1)
+            if u' ' in p:
+                first_pattern_word, longpattern = p.split(u' ',  1)
                 if first == first_pattern_word and (rest == longpattern 
 			or rest.startswith(longpattern + u' ')):
-                    yield u"inpho:{}".format(p.entity.ID)
-            elif first == p.searchpattern:
-                yield u"inpho:{}".format(p.entity.ID)
+                    yield u"abi:{}".format(name_id[p])
+            elif first == p:
+                yield u"abi:{}".format(name_id[p])
 
 
-def inpho_tokenizer(document):
+def brain_tokenizer(document):
     return list(_inpho_token_generator(document))
