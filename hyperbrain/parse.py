@@ -1,5 +1,5 @@
 import json
-with open('human-brain-atlas.json') as jsonfile:
+with open('../human-brain-atlas.json') as jsonfile:
     atlas = json.load(jsonfile)['msg']
 
 name_id = dict()
