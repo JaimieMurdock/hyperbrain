@@ -9,7 +9,11 @@ packages.append('hyperbrain')
 
 install_requires=[
         "numpy>=1.6.1",
-        "scipy>=0.13.0"]
+        "scipy>=0.13.0",
+        'bottle>=0.12',
+        'wget',
+        'topicexplorer==1.0b85'
+        ]
 
 if platform.python_version_tuple()[0] == 2:
     install_requires.append("futures>=3.0.0")
@@ -35,4 +39,8 @@ setup(
         ],
     install_requires=install_requires,
     packages=packages
+    entry_points={
+        'console_scripts' : ['hyperbrain = hyperbrain.__main__:main']
+    }
+    
 )

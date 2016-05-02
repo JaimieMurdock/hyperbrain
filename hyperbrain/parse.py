@@ -19,7 +19,7 @@ parent = dict()
 def add_ids(atlas):
     global name_id
     for item in atlas:
-        if ',' not in item['name']:
+        if True or ',' not in item['name']:
             id_name[item['id']] = item['name']
             name_id[item['name']] = item['id']
             name_abbr[item['name']] = item['acronym']
@@ -36,10 +36,6 @@ def add_ids(atlas):
             add_ids(item['children'])
 
 add_ids(atlas)
-for name, id in name_id.iteritems():
-    print id, name
-
-print len(name_id)
 
 def _brain_token_generator(document):
     if PUNC_TABLE.get(ord('-')):

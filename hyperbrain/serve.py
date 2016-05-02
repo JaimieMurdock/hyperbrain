@@ -9,6 +9,11 @@ IMAGE_DIR = os.path.join(os.path.dirname(__file__), IMAGE_DIR)
 WWW_DIR = '../www/'
 WWW_DIR = os.path.join(os.path.dirname(__file__), WWW_DIR)
 
+@route('/papers/<structure:int>')
+def get_papers(structure_id):
+    """ Returns a list of papers which reference the given brain structure. """
+    pass
+
 @route('/img/<id:int>.svg')
 def get_image(id):
     """ Find an image with the given id.
@@ -42,8 +47,22 @@ if __name__ == '__main__':
     # Construct argument parser
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=8000)
+    #parser.add_argument('config', help="Configuration File", 
+    #    type=is_valid_configfile)
     args = parser.parse_args()
-
+    """
+    # load in the configuration file
+    config = ConfigParser({
+        'raw_corpus' : None,
+        'fulltext' : 'false'})
+    config.read(args.config)
+    
+    # path variables
+    corpus_file = config.get('main', 'corpus_file')
+    
+    # Load text model objects
+    corpus = Corpus.load(corpus_file)
+    """
     # Launch server
     port = args.port
     host = '0.0.0.0'

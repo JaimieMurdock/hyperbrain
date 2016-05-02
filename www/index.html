@@ -10,7 +10,7 @@
 <body>
 <h1>HyperBrain</h1>
 <form>
-<input type="range" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
+<input type="range" style="width: 250px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
 </form>
 <div id="brainImage">
 
@@ -19,7 +19,8 @@
 
 <script>
 var chart = d3.select('#brainImage'); 
-var color = d3.scale.linear().domain([0,250]).range(['red','blue']);
+var color = d3.scale.linear().domain([0,150]).range(['blue','red']);
+var opacity = d3.scale.linear().domain([1,150]).range([0.6,1.0]);
 var data = {};
 
 function bindData(raw_data) {
@@ -27,12 +28,13 @@ function bindData(raw_data) {
   var regions = svg.selectAll("path");
 
   raw_data.forEach(function (d) {
+    d.count = parseFloat(d.count);
     data[d.id] = d;
     svg.select("path[structure_id='"+d.id+"']")
       .datum(d)
         .style('fill', function (d) { return color(d.count)})
-        .style('opacity', 1.0)
-        .append('svg:title').text(function (d) { return d.name + " (" + d.count + " mentions)" });
+        .style('opacity', function (d) { return (d.count > 1.0) ? opacity(d.count) : 0.4 })
+        .append('svg:title').text(function (d) { return d.name + ((d.count > 1) ? " (" + parseInt(d.count) + " mentions)" : '' )});
   });
 
 }
@@ -47,6 +49,7 @@ function getImage(image_id) {
                   .getElementsByTagName("svg")[0];
     chart.selectAll('svg').remove(); 
     chart.node().appendChild(svgNode);
+    d3.select('#range').style('width', svgNode.width.toString() + 'px')
   
     var svg = chart.select("svg");
     d3.csv("abi.csv", bindData);
