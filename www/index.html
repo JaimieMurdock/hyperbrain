@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <title>HyperBrain.org</title>
+  <style>
+  path { opacity: 0.4; }
+  </style>
+</head>
+<body>
+<h1>HyperBrain</h1>
+<form>
+<input type="range" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
+</form>
+<div id="brainImage">
+
+</div>
+
+
+<script>
+var chart = d3.select('#brainImage'); 
+var color = d3.scale.linear().domain([0,250]).range(['red','blue']);
+var data = {};
+
+function bindData(raw_data) {
+  var svg = chart.select('svg');
+  var regions = svg.selectAll("path");
+
+  raw_data.forEach(function (d) {
+    data[d.id] = d;
+    svg.select("path[structure_id='"+d.id+"']")
+      .datum(d)
+        .style('fill', function (d) { return color(d.count)})
+        .style('opacity', 1.0)
+        .append('svg:title').text(function (d) { return d.name + " (" + d.count + " mentions)" });
+  });
+
+}
+
+function getImage(image_id) {
+  img_url = '/img/'+image_id+'.svg';
+  
+  d3.xml(img_url, function(error, documentFragment) {
+    if (error) {console.log(error); return;}
+  
+    var svgNode = documentFragment
+                  .getElementsByTagName("svg")[0];
+    chart.selectAll('svg').remove(); 
+    chart.node().appendChild(svgNode);
+  
+    var svg = chart.select("svg");
+    d3.csv("abi.csv", bindData);
+})};
+
+getImage(25);
+</script>
+
+</body>
+</html>

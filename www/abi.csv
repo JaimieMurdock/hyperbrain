@@ -1,0 +1,78 @@
+id,name,count,children
+4096,superior parietal lobule,107,7
+9218,white matter,343,336
+4118,precuneus,153,7
+9222,corpus callosum,29,7
+4103,inferior parietal lobule,160,15
+4104,supramarginal gyrus,42,7
+4268,insula,81,7
+9388,transverse occipital sulcus,26,1
+9355,precentral sulcus,31,1
+9356,superior frontal sulcus,20,1
+4111,angular gyrus,46,7
+4696,cerebellum,86,95
+4242,parahippocampal gyrus,34,7
+9364,cingulate sulcus,25,1
+9403,central sulcus,56,1
+265505046,corona radiata,20,3
+9419,lateral ventricle,6,3
+4888,frontal pole,18,9
+4249,hippocampal formation,17,30
+9114,superior colliculus,54,17
+9243,external capsule,8,3
+9372,intraparietal sulcus,282,1
+9246,extreme capsule,13,3
+12959,medial lemniscus,6,4
+9249,fornix,10,11
+9378,superior temporal sulcus,189,1
+9371,postcentral sulcus,43,1
+4132,temporal lobe,312,54
+4005,brain,3901,0
+265505574,corticospinal tract,14,3
+4008,cerebral cortex,389,308
+4009,frontal lobe,108,87
+4010,precentral gyrus,45,11
+9131,pons,33,112
+4140,middle temporal gyrus,68,7
+9391,calcarine sulcus,59,1
+9390,lunate sulcus,13,1
+9263,internal capsule,15,3
+4147,inferior temporal gyrus,41,9
+4276,basal ganglia,26,25
+4021,superior frontal gyrus,62,7
+4278,caudate nucleus,7,10
+10150,middle temporal sulcus,8,1
+4212,superior occipital gyrus,11,7
+4780,cerebellar nuclei,9,13
+4191,lingual gyrus,37,7
+4028,middle frontal gyrus,81,7
+4277,striatum,16,17
+9281,superior longitudinal fasciculus,15,3
+4035,inferior frontal gyrus,122,12
+9418,ventricles,10,9
+4171,planum temporale,48,3
+9221,anterior commissure,20,1
+4174,temporal pole,42,9
+9260,inferior longitudinal fasciculus,8,3
+4177,planum polare,13,3
+9379,inferior temporal sulcus,14,1
+4180,occipital lobe,53,45
+4181,occipital pole,21,9
+4184,cuneus,24,7
+4697,cerebellar cortex,6,81
+9231,arcuate fasciculus,33,3
+9402,sylvian fissure,24,1
+4133,superior temporal gyrus,87,7
+9380,collateral sulcus,92,1
+4006,gray matter,76,1424
+4327,amygdala,85,135
+4156,fusiform gyrus,338,9
+9295,superior cerebellar peduncle,7,4
+4205,inferior occipital gyrus,10,7
+4078,frontal operculum,7,3
+4392,thalamus,94,135
+4084,parietal lobe,258,48
+4085,postcentral gyrus,49,11
+9240,cingulum bundle,6,3
+4287,putamen,17,3
+4220,cingulate gyrus,22,25
