@@ -2,6 +2,7 @@
 
 build/
 dist/
+images/
 hyperbrain.egg-info
 
 .*.swp
