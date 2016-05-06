@@ -39,8 +39,5 @@ setup(
         ],
     install_requires=install_requires,
     packages=packages
-    entry_points={
-        'console_scripts' : ['hyperbrain = hyperbrain.__main__:main']
-    }
     
 )

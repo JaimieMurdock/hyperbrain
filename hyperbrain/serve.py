@@ -1,4 +1,6 @@
+import json
 import os, os.path
+from vsm.corpus import Corpus
 
 from bottle import abort, request, response, route, run, static_file
 
@@ -9,10 +11,23 @@ IMAGE_DIR = os.path.join(os.path.dirname(__file__), IMAGE_DIR)
 WWW_DIR = '../www/'
 WWW_DIR = os.path.join(os.path.dirname(__file__), WWW_DIR)
 
-@route('/papers/<structure:int>')
+@route('/papers/<structure_id:int>.json')
 def get_papers(structure_id):
     """ Returns a list of papers which reference the given brain structure. """
-    pass
+    global corpus
+    import numpy as np
+    response.context_type = 'application/json'
+
+    words = [corpus.words_int[w] for w in corpus.words if w.startswith('abi:')]
+    words = [corpus.words_int.get('abi:{}'.format(structure_id))]
+    if words:
+        md = corpus.view_metadata('document')['document_label']
+        labels = [label for label, doc in zip(md, corpus.view_contexts('document')) 
+                      if np.in1d(doc, words).any()]
+    
+        return json.dumps(labels)
+    else:
+        return json.dumps(None)
 
 @route('/img/<id:int>.svg')
 def get_image(id):
@@ -47,9 +62,10 @@ if __name__ == '__main__':
     # Construct argument parser
     parser = ArgumentParser()
     parser.add_argument('-p', '--port', type=int, default=8000)
-    #parser.add_argument('config', help="Configuration File", 
-    #    type=is_valid_configfile)
+    # parser.add_argument('config', help="Configuration File", 
+    #     type=is_valid_configfile)
     args = parser.parse_args()
+
     """
     # load in the configuration file
     config = ConfigParser({
@@ -63,6 +79,9 @@ if __name__ == '__main__':
     # Load text model objects
     corpus = Corpus.load(corpus_file)
     """
+    global corpus 
+    corpus = Corpus.load('/home/jammurdo/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+
     # Launch server
     port = args.port
     host = '0.0.0.0'
