@@ -3,7 +3,9 @@ from operator import itemgetter
 import os, os.path
 
 from vsm.corpus import Corpus
+from vsm import LDA, LdaCgsViewer
 from hyperbrain.parse import parent, children
+import topicexplorer.extensions.bibtex as bibtex
 
 from bottle import abort, request, response, route, run, static_file
 
@@ -15,7 +17,7 @@ WWW_DIR = '../www/'
 WWW_DIR = os.path.join(os.path.dirname(__file__), WWW_DIR)
 
 @route('/papers/<structure_id:int>.json')
-def get_papers(structure_id):
+def get_papers(structure_id, full_cite=True):
     """ Returns a list of papers which reference the given brain structure. """
     global corpus
     import numpy as np
@@ -42,12 +44,31 @@ def get_papers(structure_id):
         label_count = dict(label_count)
 
         labels = sorted(label_count.keys(), 
-                        key=itemgetter,
+                        key=label_count.get,
                         reverse=True)
+
+        label_objs = []
+        for label in labels:
+            obj = {'id' : label, 'name' : label, 
+                   'url' : '/fulltext/'+label.replace('.txt','.pdf'),
+                   'count' : label_count[label]}
+            if full_cite:
+                obj['name'] = bibtex.label(label.replace('.txt','.pdf'))
+            label_objs.append(obj)
     
-        return json.dumps(labels)
+        return json.dumps(label_objs)
     else:
         return json.dumps(None)
+        
+@route('/fulltext/<doc_id>')
+def get_doc(doc_id):
+    import re
+    corpus_path = '/home/jaimie/workspace/hyperbrain/test/VOF_VPF/'
+    pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
+    if os.path.exists(pdf_path):
+        doc_id = re.sub('txt$','pdf', doc_id)
+    
+    return static_file(doc_id, root=corpus_path)
 
 @route('/img/<id:int>.svg')
 def get_image(id):
@@ -100,7 +121,10 @@ if __name__ == '__main__':
     corpus = Corpus.load(corpus_file)
     """
     global corpus 
-    corpus = Corpus.load('/home/jammurdo/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+    corpus = Corpus.load('/home/jaimie/workspace/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+    from argparse import Namespace
+
+    bibtex.init(None, None, Namespace(bibtex='library.bib'))
 
     # Launch server
     port = args.port

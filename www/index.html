@@ -7,6 +7,7 @@
   <title>HyperBrain.org</title>
   <style>
   path { opacity: 0.2; }
+  li { padding: 0; margin: 0; padding-bottom: 0.5em; list-style-type: none;}
   </style>
 </head>
 <body>
@@ -24,7 +25,7 @@
 
 <div id="brainImage" style="float: left;"></div>
 
-<form style="float: left; clear:left; display:block; width: 400px;">
+<form style="float: left; clear:left; display:block; width: 400px; ">
   <label for="slice" style="display: block; width: 250px; text-align: center;"><span style="float: left;">&#8592; Frontal</span> <strong>Image</strong> <span style="float: right;">Dorsal &#8594;</span></label><br />
   <input name="slice" id="slice" type="range" style="width: 250px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
 </form>
@@ -63,11 +64,17 @@ function bindData(raw_data) {
                      if (d) {
                        $.getJSON('/papers/'+d.id+'.json', function(data) { 
                          data.forEach(function(datum) {
-                             $('#corpusItems').append('<li>'+datum+'</li>');
+                             var item_text = '';
+                             item_text += '<a style="margin-left: -40px;" target="_blank" href="'+datum.url+'">';
+                             item_text += 'PDF';
+                             item_text += '</a> ';
+                             item_text += datum.name + ' ';
+                             item_text += '(' + datum.count + ' appearances)'
+
+                             $('#corpusItems').append('<li>'+item_text+'</li>');
                          });
                        });} })
       .append('svg:title').text(function (d) { return (!d) ? this.remove() : d.name + ((d.count > 1) ? " (" + parseInt(d.count) + " mentions)" : '' )});
-
 }
 
 function getImage(image_id) {
