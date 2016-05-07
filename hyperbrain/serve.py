@@ -1,6 +1,9 @@
 import json
+from operator import itemgetter
 import os, os.path
+
 from vsm.corpus import Corpus
+from hyperbrain.parse import parent, children
 
 from bottle import abort, request, response, route, run, static_file
 
@@ -18,12 +21,29 @@ def get_papers(structure_id):
     import numpy as np
     response.context_type = 'application/json'
 
-    words = [corpus.words_int[w] for w in corpus.words if w.startswith('abi:')]
-    words = [corpus.words_int.get('abi:{}'.format(structure_id))]
+    struct_heirarchy = set(children[structure_id])
+    id = structure_id
+    while parent.get(id):
+        struct_heirarchy.add(parent[id])
+        id = parent[id]
+    struct_heirarchy.remove(structure_id)
+    struct_heirarchy = [str(w) for w in struct_heirarchy]
+
+    #words = [corpus.words_int[w] for w in corpus.words if w.startswith('abi:')]
+    #words = [corpus.words_int.get('abi:{}'.format(structure_id))]
+    words = [corpus.words_int[w] for w in corpus.words 
+                 if w.startswith('abi:') and w[4:] in struct_heirarchy]
     if words:
         md = corpus.view_metadata('document')['document_label']
-        labels = [label for label, doc in zip(md, corpus.view_contexts('document')) 
-                      if np.in1d(doc, words).any()]
+        label_count = [
+            (label, np.in1d(doc, words).sum()) 
+                for label, doc in zip(md, corpus.view_contexts('document')) 
+                    if np.in1d(doc, words).any()]
+        label_count = dict(label_count)
+
+        labels = sorted(label_count.keys(), 
+                        key=itemgetter,
+                        reverse=True)
     
         return json.dumps(labels)
     else:

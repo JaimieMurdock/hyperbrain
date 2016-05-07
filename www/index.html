@@ -6,37 +6,39 @@
 
   <title>HyperBrain.org</title>
   <style>
-  path { opacity: 0.4; }
+  path { opacity: 0.2; }
   </style>
 </head>
 <body>
-<h1>HyperBrain</h1>
+<h1>HyperBrain
+<iframe src="https://ghbtns.com/github-btn.html?user=JaimieMurdock&repo=hyperbrain&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px" style="padding-left: 15px;"></iframe>
+</h1>
 <p>This visualization shows a <a href="https://en.wikipedia.org/wiki/Coronal_plane">coronal slice</a> of the left hemisphere, drawn from the <a href="http://atlas.brain-map.org/atlas?atlas=265297125">Allen Human Brain Atlas</a>.
    Colors projected onto the brain represent the number of times each anatomical region is mentioned in a literature review for the <a href="http://www.pnas.org/content/111/48/E5214.short">Visual Occipital Fasciculus (VOF)</a>.</p>
 <p>Areas mentioned more frequently are in red, while less frequently mentioned areas are in blue. Unmentioned areas appear as pale versions of their Allen Human Brain Atlas reference colors.
    Hovering on an area will display the region name and the number of mentions. Clicking on an area will reveal the texts that mention the area.
    Clicking the slider moves through the different slices of the brain.</p>
    <p>HyperBrain provides a "literature scan" on top of the traditonal neuroimaging techniques, providing an alternate organization for neuroscience reference sections.</p>
-<form>
-<label for="slice" style="display: block; width: 250px; text-align: center;"><span style="float: left;">&#8592; Frontal</span> <strong>Image</strong> <span style="float: right;">Dorsal &#8594;</span></label><br />
-<input name="slice" id="slice" type="range" style="width: 250px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
+
+<hr />
+
+<div id="brainImage" style="float: left;"></div>
+
+<form style="float: left; clear:left; display:block; width: 400px;">
+  <label for="slice" style="display: block; width: 250px; text-align: center;"><span style="float: left;">&#8592; Frontal</span> <strong>Image</strong> <span style="float: right;">Dorsal &#8594;</span></label><br />
+  <input name="slice" id="slice" type="range" style="width: 250px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
 </form>
 
-<div id="brainImage" style="float: left;">
-
-</div>
-<div id="corpus" style="position: relative; top: 0px; left: 40px;">
-<!--<h2>Corpus Items</h2>-->
-<ul id="corpusItems">
-
-</ul>
+<div id="corpus" style="margin-left: 400px; margin-top: 0px;">
+  <h2>Corpus Items</h2>
+  <ul id="corpusItems"></ul>
 </div>
 
 
 <script>
 var chart = d3.select('#brainImage'); 
 var color = d3.scale.linear().domain([0,150]).range(['blue','red']);
-var opacity = d3.scale.linear().domain([1,150]).range([0.6,1.0]);
+var opacity = d3.scale.linear().domain([1,1000]).range([0.2,1.0]);
 var data = {};
 
 function bindData(raw_data) {
@@ -47,18 +49,24 @@ function bindData(raw_data) {
     d.count = parseFloat(d.count);
     data[d.id] = d;
     svg.select("path[structure_id='"+d.id+"']")
-      .datum(d)
-        .style('fill', function (d) { return color(d.count)})
-        .style('opacity', function (d) { return (d.count > 1.0) ? opacity(d.count) : 0.4 })
-        .on('click', function (d) {
-                       $('#corpusItems').empty();
+      .datum(d);
+        //.style('fill', function (d) { return color(d.count)})
+  });
+    
+  regions
+      .style('opacity', function (d) { return (d && d.count > 1.0) ? opacity(d.count) : 0.2 })
+      .style('stroke-width', function (d) { return (d && d.count > 1.0) ? 100 * opacity(d.count) : 0 })
+      .style('stroke', '#999999')
+      .on('click', function (d) {
+                     $('#corpusItems').empty();
+                     $('#corpus h2').text(d ? d.name : '');
+                     if (d) {
                        $.getJSON('/papers/'+d.id+'.json', function(data) { 
                          data.forEach(function(datum) {
                              $('#corpusItems').append('<li>'+datum+'</li>');
-                           });
-                         }); })
-        .append('svg:title').text(function (d) { return d.name + ((d.count > 1) ? " (" + parseInt(d.count) + " mentions)" : '' )});
-  });
+                         });
+                       });} })
+      .append('svg:title').text(function (d) { return (!d) ? this.remove() : d.name + ((d.count > 1) ? " (" + parseInt(d.count) + " mentions)" : '' )});
 
 }
 

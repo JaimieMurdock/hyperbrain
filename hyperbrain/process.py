@@ -29,6 +29,12 @@ child_counts = defaultdict(int)
 for key, childs in children.iteritems():
     child_counts[key] = get_child_counts(key)
 
+parent_counts = defaultdict(int)
+for key, pkey in parent.iteritems():
+    while parent.get(pkey):
+        parent_counts[key] += abi_counts[pkey]
+        pkey = parent.get(pkey)
+
 abi_counts2 = defaultdict(int)
 # trickle down the child counts to all child nodes
 def add_to_children_of(key, value):
@@ -43,5 +49,5 @@ for key, child in children.iteritems():
 
 print ",".join(['id','name','count','child_count','children'])
 for id, child_count in child_counts.iteritems():
-    print ",".join(map(str, [id, id_name.get(id,''), abi_counts[id], child_count,
+    print ",".join(map(str, [id, '"'+id_name.get(id,'')+'"', abi_counts[id], child_count,
                              len(children.get(id, list()))]))
