@@ -12,7 +12,7 @@ install_requires=[
         "scipy>=0.13.0",
         'bottle>=0.12',
         'wget',
-        'topicexplorer==1.0b85'
+        'topicexplorer'
         ]
 
 if platform.python_version_tuple()[0] == 2:
@@ -38,6 +38,9 @@ setup(
         "Topic :: Text Processing :: Linguistic",
         ],
     install_requires=install_requires,
-    packages=packages
+    packages=packages,
+    entry_points={
+        'console_scripts' : ['hyperbrain = hyperbrain.serve:main']
+    }
     
 )
