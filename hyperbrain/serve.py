@@ -7,7 +7,9 @@ from vsm import LDA, LdaCgsViewer
 from hyperbrain.parse import parent, children
 import topicexplorer.extensions.bibtex as bibtex
 
-from bottle import abort, request, response, route, run, static_file
+from bottle import abort, request, response, route, run, static_file, Bottle
+
+from proxy import create_proxy
 
 # Global variables
 IMAGE_DIR = '../images/'
@@ -16,7 +18,12 @@ IMAGE_DIR = os.path.join(os.path.dirname(__file__), IMAGE_DIR)
 WWW_DIR = '../www/'
 WWW_DIR = os.path.join(os.path.dirname(__file__), WWW_DIR)
 
-@route('/papers/<structure_id:int>.json')
+root = Bottle()
+
+proxy_app = create_proxy("http://inphodata.cogs.indiana.edu:8010/")
+root.mount('/topics', proxy_app)
+
+@root.route('/papers/<structure_id:int>.json')
 def get_papers(structure_id, full_cite=True):
     """ Returns a list of papers which reference the given brain structure. """
     global corpus
@@ -60,17 +67,17 @@ def get_papers(structure_id, full_cite=True):
     else:
         return json.dumps(None)
         
-@route('/fulltext/<doc_id>')
+@root.route('/fulltext/<doc_id>')
 def get_doc(doc_id):
     import re
-    corpus_path = '/home/jaimie/workspace/hyperbrain/test/VOF_VPF/'
+    corpus_path = '/home/jammurdo/hyperbrain/test/VOF_VPF/'
     pdf_path = os.path.join(corpus_path, re.sub('txt$','pdf', doc_id))
     if os.path.exists(pdf_path):
         doc_id = re.sub('txt$','pdf', doc_id)
     
     return static_file(doc_id, root=corpus_path)
 
-@route('/img/<id:int>.svg')
+@root.route('/img/<id:int>.svg')
 def get_image(id):
     """ Find an image with the given id.
 
@@ -87,12 +94,22 @@ def get_image(id):
     else:
         abort(404, "Image not found.")
 
-@route('/<filename:path>')
+@root.route('/<filename:path>')
 def www_file(filename):
     """ Serves a static file, given a path. """
-    return static_file(filename, root=WWW_DIR)
+    if filename.endswith('isomap'):
+        filename += '/'
+    if filename.endswith('/'):
+        filename += 'index.html'
 
-@route('/')
+    path = os.path.join(WWW_DIR, filename)
+    if os.path.exists(path):
+        return static_file(filename, root=WWW_DIR)
+    else:
+        return static_file(filename,
+            root='/home/jammurdo/workspace/topics-1.0/www/')
+
+@root.route('/')
 def index():
     return static_file('index.html', root=WWW_DIR)
 
@@ -121,12 +138,12 @@ if __name__ == '__main__':
     corpus = Corpus.load(corpus_file)
     """
     global corpus 
-    corpus = Corpus.load('/home/jaimie/workspace/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+    corpus = Corpus.load('/home/jammurdo/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
     from argparse import Namespace
 
-    bibtex.init(None, None, Namespace(bibtex='library.bib'))
+    #bibtex.init(None, Namespace(bibtex='library.bib'))
 
     # Launch server
     port = args.port
     host = '0.0.0.0'
-    run(host=host, port=port)
+    root.run(host=host, port=port)

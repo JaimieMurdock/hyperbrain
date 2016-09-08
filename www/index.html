@@ -1,40 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <script src="https://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+
+  <!-- Bootstrap! -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <!-- Place this tag anywhere on your page. -->
+  <script async defer id="github-bjs" src="https://buttons.github.io/buttons.js"></script>
 
   <title>HyperBrain.org</title>
   <style>
   path { opacity: 0.2; }
-  li { padding: 0; margin: 0; padding-bottom: 0.5em; list-style-type: none;}
+  #corpusItems li { padding-bottom: 10px; }
+  #corpusItems li a { font-weight: bold; }
+  .jumbotron p {padding-bottom: 10px;}
+  .github-button { margin-bottom: 0px;}
+  .github-button-container { height: 28px; display: inline-block; }
+  .github-button-container iframe { margin-bottom: -6px;}
+  form * { display: block; margin-left: auto; margin-right: auto; }
   </style>
 </head>
+
 <body>
-<h1>HyperBrain
-<iframe src="https://ghbtns.com/github-btn.html?user=JaimieMurdock&repo=hyperbrain&type=star&count=true" frameborder="0" scrolling="0" width="170px" height="20px" style="padding-left: 15px;"></iframe>
-</h1>
-<p>This visualization shows a <a href="https://en.wikipedia.org/wiki/Coronal_plane">coronal slice</a> of the left hemisphere, drawn from the <a href="http://atlas.brain-map.org/atlas?atlas=265297125">Allen Human Brain Atlas</a>.
-   Colors projected onto the brain represent the number of times each anatomical region is mentioned in a literature review for the <a href="http://www.pnas.org/content/111/48/E5214.short">Visual Occipital Fasciculus (VOF)</a>.</p>
-<p>Areas mentioned more frequently are in red, while less frequently mentioned areas are in blue. Unmentioned areas appear as pale versions of their Allen Human Brain Atlas reference colors.
-   Hovering on an area will display the region name and the number of mentions. Clicking on an area will reveal the texts that mention the area.
-   Clicking the slider moves through the different slices of the brain.</p>
-   <p>HyperBrain provides a "literature scan" on top of the traditonal neuroimaging techniques, providing an alternate organization for neuroscience reference sections.</p>
+<div class="container">
+  <div class="jumbotron">
+    <h1>HyperBrain</h1>
+    <p style="font-weight: bold;">Literature scan of the Human Brain</p>
+    <p>Source available on 
+      <span class="github-button-container">
+        <a class="github-button" href="https://github.com/JaimieMurdock/hyperbrain" data-style="mega" aria-label="Star JaimieMurdock/hyperbrain on GitHub">GitHub</a>
+      </span>
+    </p>
+  </div>
+  <h2>Visualization Description</h2>
+  <p>This visualization shows a <a href="https://en.wikipedia.org/wiki/Coronal_plane">coronal slice</a> of the left hemisphere, drawn from the <a href="http://atlas.brain-map.org/atlas?atlas=265297125">Allen Human Brain Atlas</a>.
+  <p>Each area is colored according to the Allen Human Brain Atlas reference colors.
+     Projected onto the opacity is the number of times each anatomical region is mentioned in a literature review for the <a href="http://www.pnas.org/content/111/48/E5214.short">Visual Occipital Fasciculus (VOF)</a>.
+     Hovering on an area will display the region name and the number of mentions. Clicking on an area will reveal the texts to the right, sorted by the number of mentions.
+     Clicking the slider moves through different coronal slices of the brain.</p>
+     <p>HyperBrain provides a "literature scan" on top of the traditonal neuroimaging techniques, providing an alternate organization for neuroscience reference sections.</p>
+  
+  <hr />
+  
+  <form id="sliceForm" style="margin-bottom: -35px; z-index: 1000; float: left; clear:left; display:block; width: 500px;">
+    <input name="slice" id="slice" type="range" style="width: 300px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
+    <label for="slice" style="width: 300px; text-align: center;"><span style="float: left;">&#8592; Frontal</span>  <span style="float: right;">Dorsal &#8594;</span><strong>Image</strong></label><br />
+  </form>
 
-<hr />
-
-<div id="brainImage" style="float: left;"></div>
-
-<form style="float: left; clear:left; display:block; width: 400px; ">
-  <label for="slice" style="display: block; width: 250px; text-align: center;"><span style="float: left;">&#8592; Frontal</span> <strong>Image</strong> <span style="float: right;">Dorsal &#8594;</span></label><br />
-  <input name="slice" id="slice" type="range" style="width: 250px;" defaultValue='25' min='1' max='104' onchange="getImage(this.value)"/>
-</form>
-
-<div id="corpus" style="margin-left: 400px; margin-top: 0px;">
-  <h2>Corpus Items</h2>
-  <ul id="corpusItems"></ul>
-</div>
-
+  <div id="brainImage" style="float: left; clear: left;"></div>
+  
+  <div id="corpus" style="margin-left: 510px; margin-top: 0px;">
+    <h2>Corpus Items</h2>
+    <ul id="corpusItems" class="list-unstyled"></ul>
+  </div>
+</div> 
 
 <script>
 var chart = d3.select('#brainImage'); 
@@ -65,11 +90,12 @@ function bindData(raw_data) {
                        $.getJSON('/papers/'+d.id+'.json', function(data) { 
                          data.forEach(function(datum) {
                              var item_text = '';
-                             item_text += '<a style="margin-left: -40px;" target="_blank" href="'+datum.url+'">';
+                             item_text += datum.name + ' ';
+                             item_text += '<br />';
+                             item_text += '<a target="_blank" href="'+datum.url+'">';
                              item_text += 'PDF';
                              item_text += '</a> ';
-                             item_text += datum.name + ' ';
-                             item_text += '(' + datum.count + ' appearances)'
+                             item_text += '(<strong>' + datum.count + '</strong> mentions)';
 
                              $('#corpusItems').append('<li>'+item_text+'</li>');
                          });
@@ -90,6 +116,8 @@ function getImage(image_id) {
     d3.select('#range').style('width', svgNode.width.toString() + 'px')
   
     var svg = chart.select("svg");
+    $('#corpus').attr('style', 'margin-left: '+  (svg.attr('width')) +'px');
+    //$('#sliceForm').attr('style', 'width: '+  (svg.attr('width')) +'px');
     d3.csv("abi.csv", bindData);
 })};
 

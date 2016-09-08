@@ -38,7 +38,7 @@ def download_images(image_ids, output_dir=None):
 
     # url builder
     url = "http://api.brain-map.org/api/v2/svg_download/{id}"
-    url += "?groups=265297119,266932194,266932196,266932197&downsample=8"
+    url += "?groups=265297119,266932194,266932196,266932197&downsample=7"
 
     pbar = ProgressBar(widgets=[Percentage(), Bar()], maxval=len(image_ids)).start()
     for i,image_id in pbar(enumerate(image_ids)):
