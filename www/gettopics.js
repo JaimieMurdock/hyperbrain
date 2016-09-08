@@ -36,14 +36,16 @@ function gettopics(words) {
             ' <small>(k = ' + k + ')</small></a></dt>');
           $('#wordsDl').append('<dd>' + 
             val[k][t] + '</dd>'); }*/
+          if (i % 3 == 0) $('#wordsDl').append('<div class="row">');
           $('#wordsDl').append('<div class="col-xs-4"><h4><a href="' + k + '/?topic=' + t + '">' +
             'Topic ' + t +
             ' <small>(k = ' + k + ')</small></a></h4><p>' +
             val[k][t] + '</p></div>');
           }
+          if (i % 3 == 2) $('#wordsDl').append('</div>');
           $('#wordsDl').append('<div class="clear">&nbsp;</div>');
         });
     });
-    //$('#wordsDl').append('<iframe class="col-xs-12" style="height:500px;" src="http://inphodata.cogs.indiana.edu:8010/topics?q='+query+'"></iframe>')
+    $('#wordsDl').append('<iframe class="col-xs-12" style="height:500px;" src="http://'+window.location.hostname+':8010/topics?q='+query+'"></iframe>')
   });
 }
