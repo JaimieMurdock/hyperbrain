@@ -5,7 +5,7 @@ import os, os.path
 from vsm.corpus import Corpus
 from vsm import LDA, LdaCgsViewer
 from hyperbrain.parse import parent, children
-import topicexplorer.extensions.bibtex as bibtex
+# import topicexplorer.extensions.bibtex as bibtex
 
 from bottle import abort, request, response, route, run, static_file, Bottle
 
@@ -24,7 +24,7 @@ proxy_app = create_proxy("http://inphodata.cogs.indiana.edu:8010/")
 root.mount('/topics', proxy_app)
 
 @root.route('/papers/<structure_id:int>.json')
-def get_papers(structure_id, full_cite=True):
+def get_papers(structure_id, ctx_type='article', full_cite=False):
     """ Returns a list of papers which reference the given brain structure. """
     global corpus
     import numpy as np
@@ -43,10 +43,10 @@ def get_papers(structure_id, full_cite=True):
     words = [corpus.words_int[w] for w in corpus.words 
                  if w.startswith('abi:') and w[4:] in struct_heirarchy]
     if words:
-        md = corpus.view_metadata('document')['document_label']
+        md = corpus.view_metadata(ctx_type)[ctx_type + '_label']
         label_count = [
             (label, np.in1d(doc, words).sum()) 
-                for label, doc in zip(md, corpus.view_contexts('document')) 
+                for label, doc in zip(md, corpus.view_contexts(ctx_type)) 
                     if np.in1d(doc, words).any()]
         label_count = dict(label_count)
 
@@ -76,6 +76,8 @@ def get_doc(doc_id):
         doc_id = re.sub('txt$','pdf', doc_id)
     
     return static_file(doc_id, root=corpus_path)
+"""
+
 
 @root.route('/img/<id:int>.svg')
 def get_image(id):
@@ -113,7 +115,7 @@ def www_file(filename):
 def index():
     return static_file('index.html', root=WWW_DIR)
 
-if __name__ == '__main__':
+def main():
     from argparse import ArgumentParser
     from topicexplorer.lib.util import is_valid_configfile
 
@@ -122,6 +124,7 @@ if __name__ == '__main__':
     parser.add_argument('-p', '--port', type=int, default=8000)
     # parser.add_argument('config', help="Configuration File", 
     #     type=is_valid_configfile)
+    parser.add_argument('corpus')
     args = parser.parse_args()
 
     """
@@ -138,12 +141,15 @@ if __name__ == '__main__':
     corpus = Corpus.load(corpus_file)
     """
     global corpus 
-    corpus = Corpus.load('/home/jammurdo/hyperbrain/test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+    corpus = Corpus.load(args.corpus)
     from argparse import Namespace
 
-    #bibtex.init(None, Namespace(bibtex='library.bib'))
+    # bibtex.init(None, None, Namespace(bibtex='library.bib'))
 
     # Launch server
     port = args.port
     host = '0.0.0.0'
     root.run(host=host, port=port)
+
+if __name__ == '__main__':
+    main()
