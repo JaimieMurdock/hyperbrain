@@ -60,10 +60,12 @@
   
   <div id="corpus" style="margin-left: 510px; margin-top: 0px;">
     <h2>Corpus Items</h2>
+    <div id="wordsDl"></div>
     <ul id="corpusItems" class="list-unstyled"></ul>
   </div>
 </div> 
 
+  <script src="gettopics.js"></script>
 <script>
 var chart = d3.select('#brainImage'); 
 var color = d3.scale.linear().domain([0,150]).range(['blue','red']);
@@ -95,14 +97,18 @@ function bindData(raw_data) {
                              var item_text = '';
                              item_text += datum.name + ' ';
                              item_text += '<br />';
-                             item_text += '<a target="_blank" href="'+datum.url+'">';
-                             item_text += 'PDF';
-                             item_text += '</a> ';
+                             if (datum.doi) {
+                               item_text += '<a target="_blank" href="'+datum.url+'">';
+                               item_text += 'DOI';
+                               item_text += '</a> '; 
+                             }
                              item_text += '(<strong>' + datum.count + '</strong> mentions)';
 
                              $('#corpusItems').append('<li>'+item_text+'</li>');
                          });
-                       });} })
+                       });
+                       gettopics([d.id.toString()]);
+                       } })
       .append('svg:title').text(function (d) { return (!d) ? this.remove() : d.name + ((d.count > 1) ? " (" + parseInt(d.count) + " mentions)" : '' )});
 }
 
@@ -126,6 +132,7 @@ function getImage(image_id) {
 
 $("#slice").val(25);
 getImage(25);
+
 </script>
 
 </body>
