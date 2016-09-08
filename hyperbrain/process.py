@@ -4,7 +4,8 @@ import numpy as np
 from hyperbrain.parse import *
 from vsm.corpus import Corpus
 
-c = Corpus.load('../test/models/VOF_VPF-txt-freq5-nltk-en-freq10-N1095.npz')
+import sys
+c = Corpus.load(sys.argv[-1])
 
 # get all terms in corpus
 abi_vocab = [word for word in c.words if word.startswith('abi:')]

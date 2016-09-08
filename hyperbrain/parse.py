@@ -37,6 +37,14 @@ def add_ids(atlas):
 
 add_ids(atlas)
 
+def get_parents(id):
+    ps = [id]
+    par = parent.get(id, None)
+    while par is not None:
+        ps.append(par)
+        par = parent.get(par, None)
+    return ps
+
 def _brain_token_generator(document):
     if PUNC_TABLE.get(ord('-')):
         del PUNC_TABLE[ord('-')]
