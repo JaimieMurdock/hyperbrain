@@ -20,7 +20,7 @@ WWW_DIR = os.path.join(os.path.dirname(__file__), WWW_DIR)
 
 root = Bottle()
 
-proxy_app = create_proxy("http://inphodata.cogs.indiana.edu:8010/")
+proxy_app = create_proxy("http://localhost:8010/")
 root.mount('/topics', proxy_app)
 
 @root.route('/papers/<structure_id:int>.json')
@@ -43,22 +43,27 @@ def get_papers(structure_id, ctx_type='article', full_cite=False):
     words = [corpus.words_int[w] for w in corpus.words 
                  if w.startswith('abi:') and w[4:] in struct_heirarchy]
     if words:
-        md = corpus.view_metadata(ctx_type)[ctx_type + '_label']
-        label_count = [
-            (label, np.in1d(doc, words).sum()) 
+        md = corpus.view_metadata(ctx_type)
+        label_data = [
+            (label[ctx_type + '_label'], 
+                {'count' : np.in1d(doc, words).sum(),
+                 'doi' : label['doi'],
+                 'title' : label['title']}) 
                 for label, doc in zip(md, corpus.view_contexts(ctx_type)) 
                     if np.in1d(doc, words).any()]
-        label_count = dict(label_count)
+        label_data = dict(label_data)
 
-        labels = sorted(label_count.keys(), 
-                        key=label_count.get,
+        labels = sorted(label_data.keys(), 
+                        key=lambda x: label_data[x]['count'],
                         reverse=True)
 
         label_objs = []
         for label in labels:
-            obj = {'id' : label, 'name' : label, 
-                   'url' : '/fulltext/'+label.replace('.txt','.pdf'),
-                   'count' : label_count[label]}
+            obj = {'id' : label, 'name' : label_data[label]['title'],
+                   #'url' : '/fulltext/'+label.replace('.txt','.pdf'),
+                   'url' : 'http://dx.doi.org/' + label_data[label]['doi'],
+                   'doi' : label_data[label]['doi'],
+                   'count' : label_data[label]['count']}
             if full_cite:
                 obj['name'] = bibtex.label(label.replace('.txt','.pdf'))
             label_objs.append(obj)
@@ -76,7 +81,6 @@ def get_doc(doc_id):
         doc_id = re.sub('txt$','pdf', doc_id)
     
     return static_file(doc_id, root=corpus_path)
-"""
 
 
 @root.route('/img/<id:int>.svg')
@@ -95,6 +99,7 @@ def get_image(id):
         return static_file(path, root=IMAGE_DIR)
     else:
         abort(404, "Image not found.")
+
 
 @root.route('/<filename:path>')
 def www_file(filename):
@@ -149,7 +154,7 @@ def main():
     # Launch server
     port = args.port
     host = '0.0.0.0'
-    root.run(host=host, port=port)
+    root.run(server='paste', host=host, port=port)
 
 if __name__ == '__main__':
     main()

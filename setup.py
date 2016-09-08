@@ -12,7 +12,8 @@ install_requires=[
         "scipy>=0.13.0",
         'bottle>=0.12',
         'wget',
-        'topicexplorer'
+        'topicexplorer',
+        'wsgiproxy'
         ]
 
 if platform.python_version_tuple()[0] == 2:
