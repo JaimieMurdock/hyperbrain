@@ -112,6 +112,9 @@ def www_file(filename):
     path = os.path.join(WWW_DIR, filename)
     if os.path.exists(path):
         return static_file(filename, root=WWW_DIR)
+    elif os.path.exists(os.path.join('/home/jammurdo/Neuro/', filename)):
+        return static_file(filename,
+            root='/home/jammurdo/Neuro')
     else:
         return static_file(filename,
             root='/home/jammurdo/workspace/topics-1.0/www/')

@@ -10,7 +10,7 @@ var combineWords = function(words) {
 }
 
 var ks = [20, 40, 60, 80];
-var k_urls = ks.map(function(k) { return 'topics/' + k + "/topics.json" });
+var k_urls = ks.map(function(k) { return 'http://localhost:8000/' + k + "/topics.json" });
 var topics = Promise.all(k_urls.map($.getJSON)).then(function (data) {
     var t = {}; 
     data.forEach(function(d,i) {
@@ -46,6 +46,6 @@ function gettopics(words) {
           $('#wordsDl').append('<div class="clear">&nbsp;</div>');
         });
     });
-    $('#wordsDl').append('<iframe class="col-xs-12" style="height:500px;" src="http://'+window.location.hostname+':8010/topics?q='+query+'"></iframe>')
+    $('#wordsDl').append('<iframe class="col-xs-12" style="height:500px;" src="http://'+window.location.hostname+':8000/topics?q='+query+'"></iframe>')
   });
 }
