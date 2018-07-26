@@ -5,10 +5,10 @@ from csv import DictReader
 def build_graph(graphfile):
     author_readings = defaultdict(lambda x: defaultdict(list))
     with open(graphfile) as infile:
-        reader = DictReader(graphfile, fieldnames=[
+        reader = DictReader(infile, fieldnames=[
             'author', 'seq', 
             'date', 'article', 'year', 
-            'cited', 'cited_year'])
+            'cited', 'cited_year'], delimiter='\t')
         
         for row in reader:
             author_readings[row['author']][row['year']].append(row['cited'])
@@ -17,11 +17,14 @@ def build_graph(graphfile):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('graphfile', required=True)
+    parser.add_argument('graphfile')
     args = parser.parse_args()
 
     graph = build_graph(args.graphfile)
     for author, year_readings in graph.items():
         print(author)
         for year, readings in year_readings.items():
-            print(year, len(readings))
+            try:
+                print(year, len(readings))
+            except TypeError:
+                pass
