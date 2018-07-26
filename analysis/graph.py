@@ -3,7 +3,7 @@ from collections import defaultdict
 from csv import DictReader
 
 def build_graph(graphfile):
-    author_readings = defaultdict(lambda: defaultdict(list))
+    author_readings = defaultdict(lambda: defaultdict(set))
     with open(graphfile) as infile:
         reader = DictReader(infile, fieldnames=[
             'author', 'seq', 
@@ -11,7 +11,7 @@ def build_graph(graphfile):
             'cited', 'cited_year'], delimiter='\t')
         
         for row in reader:
-            author_readings[row['author']][row['year']].append(row['cited'])
+            author_readings[row['author']][row['year']].add(row['cited'])
 
     return author_readings
 
