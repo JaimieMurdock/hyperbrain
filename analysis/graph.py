@@ -11,7 +11,7 @@ def build_graph(graphfile):
             'cited', 'cited_year'], delimiter='\t')
         
         for row in reader:
-            author_readings[row['author']][row['year']].add(row['cited'])
+            author_readings[row['author']][int(row['year'])].add(row['cited'])
 
     return author_readings
 
@@ -23,8 +23,8 @@ if __name__ == '__main__':
     graph = build_graph(args.graphfile)
     for author, year_readings in graph.items():
         print(author)
-        for year, readings in year_readings.items():
-            try:
-                print(year, len(readings))
-            except TypeError:
-                pass
+        years = sorted(year_readings.keys())
+        encountered = set()
+        for year in years:
+            print(year, len(year_readings[year]), len(encountered.difference(year_readings[year])))
+            encountered.update(year_readings[year])
