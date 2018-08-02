@@ -9,6 +9,8 @@
 - online vs print issns and duplicate data
     - there are both issn and eissn for things, are they both listed together?
 
+- There are no ORCIDs. There's a field orcid_id in wos_summary_names, but it has no data. orcid_id_tr must be used.
+
 # postgres issues
 
 - some citation identifiers appear to have return characters or there is an 80-char truncation in `psql` output
