@@ -25,7 +25,7 @@ if __name__ == '__main__':
     
     pbar = ProgressBar(widgets=[Bar()])
     for key in pbar(abstracts.keys()):
-        filename = os.path.join(args.ouptut, key)
+        filename = os.path.join(args.output, key)
         with open(filename, 'w') as outfile:
             outfile.write(titles[key] + '\n')
             outfile.write(abstracts[key] + '\n')
