@@ -22,9 +22,12 @@ if __name__ == '__main__':
 
     graph = build_graph(args.graphfile)
     for author, year_readings in graph.items():
-        print(author)
         years = sorted(year_readings.keys())
-        encountered = set()
-        for year in years:
-            print(year, len(year_readings[year]), len(encountered.difference(year_readings[year])))
-            encountered.update(year_readings[year])
+        if len(years) > 3:
+            print(author)
+            encountered = set()
+            for year in years:
+                print(year, len(year_readings[year]),
+                len(year_readings[year].difference(encountered)),
+                len(encountered))
+                encountered.update(year_readings[year])
