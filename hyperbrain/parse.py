@@ -56,13 +56,12 @@ def _brain_token_generator(document):
     rest = rest.replace('\x00', '')
 
     while rest:
-        if u' ' not in rest:
-            if rest:
-                yield rest
-            return
-
-        first, rest = rest.split(u' ', 1)
-        rest = rest.strip()
+        try:
+            first, rest = rest.split(u' ', 1)
+            rest = rest.strip()
+        except ValueError:
+            first = rest
+            rest = ''
 
         # always yield the raw string
         if first:
